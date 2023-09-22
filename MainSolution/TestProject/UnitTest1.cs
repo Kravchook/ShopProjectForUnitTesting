@@ -14,15 +14,17 @@ namespace TestProject
         {
             Product[] products =
             {
-                new Product {Name ="Milk", Price = 3, ProductID = 1},
-                new Product {Name = "Bread", Price = 5, ProductID = 2},
-                new Product {Name = "Eggs", Price = 8, ProductID = 3}
+                new Product {ProductID = 1, Name = "Lays", Price = 20},
+                new Product {ProductID = 2, Name = "Pringles", Price = 40}
             };
 
-            ShoppingCart cart = new ShoppingCart(new Discount_1(), new ValueCalculator()) { Products = products };
+            Discount_1 discount1 = new Discount_1();
+            ValueCalculator calculator = new ValueCalculator();
+
+            ShoppingCart cart = new ShoppingCart(discount1, calculator) { Products = products };
 
             var actualResult = cart.CalculateTotal();
-            var expectedResult = (decimal)15.84;
+            var expectedResult = (decimal)59.4;
 
             Assert.That(actualResult, Is.EqualTo(expectedResult), "Calculated total amount is not correct!");
         }
@@ -36,15 +38,17 @@ namespace TestProject
         {
             Product[] products =
             {
-                new Product {Name ="Milk", Price = 3, ProductID = 1},
-                new Product {Name = "Bread", Price = 5, ProductID = 2},
-                new Product {Name = "Eggs", Price = 8, ProductID = 3}
+                new Product {ProductID = 1, Name = "Lays", Price = 20},
+                new Product {ProductID = 2, Name = "Pringles", Price = 40}
             };
 
-            ShoppingCart cart = new ShoppingCart(new Discount_5(), new ValueCalculator()) { Products = products };
+            Discount_5 discount5 = new Discount_5();
+            ValueCalculator calculator = new ValueCalculator();
+
+            ShoppingCart cart = new ShoppingCart(discount5, calculator) { Products = products };
 
             var actualResult = cart.CalculateTotal();
-            var expectedResult = (decimal)15.2;
+            var expectedResult = (decimal)57;
 
             Assert.That(actualResult, Is.EqualTo(expectedResult), "Calculated total amount is not correct!");
         }
@@ -58,14 +62,13 @@ namespace TestProject
         {
             Product[] products =
             {
-                new Product {Name ="Milk", Price = 3, ProductID = 1},
-                new Product {Name = "Bread", Price = 5, ProductID = 2},
-                new Product {Name = "Eggs", Price = 8, ProductID = 3}
+                new Product {ProductID = 1, Name = "Lays", Price = 20},
+                new Product {ProductID = 2, Name = "Pringles", Price = 40}
             };
 
             ValueCalculator calculator = new ValueCalculator();
             var actualResult = calculator.ValueCalc(products);
-            var expectedResult = (decimal)16;
+            var expectedResult = (decimal)60;
 
             Assert.That(actualResult, Is.EqualTo(expectedResult), "Calculated total amount is not correct!");
         }
@@ -77,62 +80,129 @@ namespace TestProject
         [Category("Discount")]
         public void VerifyDiscount_1()
         {
-            Discount_1 discount1 = new Discount_1();
-            var actualResult = discount1.PercentageValue(10);
-            var expectedResult = (decimal)9.9;
+            Product[] products =
+            {
+                new Product {ProductID = 1, Name = "Lays", Price = 20},
+                new Product {ProductID = 2, Name = "Pringles", Price = 40}
+            };
 
-            Assert.That(actualResult, Is.EqualTo(expectedResult), "Calculated amount with 1% off discount is not correct!");
+            Discount_1 discount1 = new Discount_1();
+
+            var actualResult1 = discount1.PercentageValue(products[0].Price);
+            var expectedResult1 = (decimal)19.8;
+
+            var actualResult2 = discount1.PercentageValue(products[1].Price);
+            var expectedResult2 = (decimal)39.6;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult1, Is.EqualTo(expectedResult1), $"Calculated amount with 1% off discount for product {products[0].Name} is not correct!");
+                Assert.That(actualResult2, Is.EqualTo(expectedResult2), $"Calculated amount with 1% off discount for product {products[1].Name} is not correct!");
+            });
         }
 
         /// <summary>
-        /// Verifies the amount with 1% off discount 
+        /// Verifies the amount with 5% off discount 
         /// </summary>
         [Test]
         [Category("Discount")]
         public void VerifyDiscount_5()
         {
+            Product[] products =
+            {
+                new Product {ProductID = 1, Name = "Lays", Price = 20},
+                new Product {ProductID = 2, Name = "Pringles", Price = 40}
+            };
+
             Discount_5 discount5 = new Discount_5();
-            var actualResult = discount5.PercentageValue(50);
-            var expectedResult = (decimal)47.5;
 
-            Assert.That(actualResult, Is.EqualTo(expectedResult), "Calculated amount with 1% off discount is not correct!");
+            var actualResult1 = discount5.PercentageValue(products[0].Price);
+            var expectedResult1 = (decimal)19;
+
+            var actualResult2 = discount5.PercentageValue(products[1].Price);
+            var expectedResult2 = (decimal)38;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(actualResult1, Is.EqualTo(expectedResult1), $"Calculated amount with 5% off discount for product {products[0].Name} is not correct!");
+                Assert.That(actualResult2, Is.EqualTo(expectedResult2), $"Calculated amount with 5% off discount for product {products[1].Name} is not correct!");
+            });
         }
 
         /// <summary>
-        /// Verifies Products are equal 
+        /// Verifies products are equal 
         /// </summary>
         [Test]
         [Category("Product")]
-        public void VerifyProductsAreEqual()
+        public void VerifyProductsAreEqual_EqualsMethod()
         {
-            Product milk = new Product { Name = "Milk", Price = 3, ProductID = 1 };
-            Product milk2 = new Product { Name = "Milk", Price = 3, ProductID = 1 };
-            Product milk3 = milk;
+            Product[] products =
+            {
+                new Product {ProductID = 1, Name = "Lays", Price = 20},
+                new Product {ProductID = 2, Name = "Pringles", Price = 40}
+            };
 
-            Assert.IsTrue(milk.Equals(milk2), $"Product {milk.Name} is not equal to product {milk2.Name}!");
-            Assert.IsTrue(milk.Equals(milk3), $"Product {milk.Name} is not equal to product {milk3.Name}!");
-
-            //// Current implementation of operator '==' does not allow to verify it
-            //Assert.IsTrue(milk == milk2, $"Product {milk.Name} is not equal to product {milk2.Name}!");
+            Assert.Multiple(() =>
+            {
+                Assert.IsTrue(products[0].Equals(products[0]), $"Product {products[0].Name} is not equal to product {products[0].Name}!");
+                Assert.IsTrue(products[1].Equals(products[1]), $"Product {products[1].Name} is not equal to product {products[1].Name}!");
+            });
         }
 
         /// <summary>
-        /// Verifies Products are not equal 
+        /// Verifies products are not equal 
         /// </summary>
         [Test]
         [Category("Product")]
-        public void VerifyProductsNotEqual()
+        public void VerifyProductsNotEqual_EqualsMethod()
         {
-            Product milk = new Product { Name = "Milk", Price = 3, ProductID = 1 };
-            Product bread = new Product { Name = "Bread", Price = 5, ProductID = 2 };
-            Product eggs = new Product { Name = "Eggs", Price = 8, ProductID = 3 };
+            Product[] products =
+            {
+                new Product {ProductID = 1, Name = "Lays", Price = 20},
+                new Product {ProductID = 2, Name = "Pringles", Price = 40}
+            };
 
-            Assert.IsFalse(milk.Equals(bread), $"Product {milk.Name} is equal to product {bread.Name}!");
-            Assert.IsFalse(bread.Equals(eggs), $"Product {bread.Name} is equal to product {eggs.Name}!");
-            Assert.IsFalse(milk.Equals(eggs), $"Product {milk.Name} is equal to product {eggs.Name}!");
+            Assert.IsFalse(products[0].Equals(products[1]), $"Product {products[0].Name} is equal to product {products[1].Name}!");
+        }
 
-            //// Current implementation of operator '!=' does not allow to verify it
-            //Assert.IsTrue(milk != bread, $"Product {milk.Name} is not equal to product {bread.Name}!");
+        /// <summary>
+        /// Verifies products are equal 
+        /// </summary>
+        [Test]
+        [Category("Product")]
+        public void VerifyProductsAreEqual_ByOperator()
+        {
+            Product[] products =
+            {
+                new Product {ProductID = 1, Name = "Lays", Price = 20},
+                new Product {ProductID = 2, Name = "Pringles", Price = 40}
+            };
+
+            // NOTE: Current implementation of operator '==' does not allow to verify it
+            // Test run will be aborted because of recursive loop
+            Assert.Multiple(() =>
+            {
+                Assert.IsTrue(products[0] == products[0], $"Product {products[0].Name} is not equal to product {products[0].Name}!");
+                Assert.IsTrue(products[1] == products[1], $"Product {products[1].Name} is not equal to product {products[1].Name}!");
+            });
+        }
+
+        /// <summary>
+        /// Verifies products are not equal 
+        /// </summary>
+        [Test]
+        [Category("Product")]
+        public void VerifyProductsNotEqual_ByOperator()
+        {
+            Product[] products =
+            {
+                new Product {ProductID = 1, Name = "Lays", Price = 20},
+                new Product {ProductID = 2, Name = "Pringles", Price = 40}
+            };
+
+            // NOTE: Current implementation of operator '==' does not allow to verify it
+            // Test run will be aborted because of recursive loop
+            Assert.IsTrue(products[0] != products[1], $"Product {products[0].Name} is equal to product {products[1].Name}!");
         }
 
         /// <summary>
@@ -140,19 +210,22 @@ namespace TestProject
         /// </summary>
         [Test]
         [Category("Product")]
-        public void VerifyProductsToString()
+        public void VerifyProducts_ToStringMethod()
         {
-            Product milk = new Product { Name = "Milk", Price = 3, ProductID = 1 };
-            Product bread = new Product { Name = "Bread", Price = 5, ProductID = 2 };
-            Product eggs = new Product { Name = "Eggs", Price = 8, ProductID = 3 };
+            Product[] products =
+            {
+                new Product {ProductID = 1, Name = "Lays", Price = 20},
+                new Product {ProductID = 2, Name = "Pringles", Price = 40}
+            };
 
-            var expectedMilk = "Product ID: 1, Name: Milk, Price: 3";
-            var expectedBread = "Product ID: 2, Name: Bread, Price: 5";
-            var expectedEggs = "Product ID: 3, Name: Eggs, Price: 8";
+            var expectedResult1 = "Product ID: 1, Name: Lays, Price: 20";
+            var expectedResult2 = "Product ID: 2, Name: Pringles, Price: 40";
 
-            Assert.That(milk.ToString(), Is.EqualTo(expectedMilk));
-            Assert.That(bread.ToString(), Is.EqualTo(expectedBread));
-            Assert.That(eggs.ToString(), Is.EqualTo(expectedEggs));
+            Assert.Multiple(() =>
+            {
+                Assert.AreEqual(expectedResult1, products[0].ToString());
+                Assert.AreEqual(expectedResult2, products[1].ToString());
+            });
         }
     }
 }
